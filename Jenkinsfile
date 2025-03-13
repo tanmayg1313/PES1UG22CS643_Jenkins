@@ -1,33 +1,34 @@
 pipeline {
     agent any
-
     stages {
+        stage('Clone repository') {
+            steps {
+                checkout([$class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    useRemoteConfigs: [[url: 'https://github.com/tanmayg1313/PES1UG22CS643_Jenkins']]
+                ])
+            }
+        }
         stage('Build') {
             steps {
-                script {
-                    sh 'g++ -o output PES1UG22CS643.cpp' // Compile the C++ file
-                }
+                build 'PES1UG22CS643-1'
+                sh 'g++ main/hello.cpp -o output'
             }
         }
-
         stage('Test') {
             steps {
-                script {
-                    sh './output' // Run the compiled executable
-                }
+                sh './output'
             }
         }
-
         stage('Deploy') {
             steps {
-                echo 'Deploying the application...' // Modify this step based on deployment needs
+                echo 'deploy'
             }
         }
     }
-
     post {
         failure {
-            echo 'Pipeline failed!'
+            error 'Pipeline failed'
         }
     }
 }
